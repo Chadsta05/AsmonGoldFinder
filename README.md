@@ -4,12 +4,7 @@
 
 Asmon Finder is a World of Warcraft addon for **WoW Forever** (and compatible clients) that watches for character names you care about, fires a clear alert, and remembers the last sighting with zone + map coordinates. Built for Forever’s **full character names** (no realms) — names like `Donald Trump` or `Asmongold` match exactly, case-insensitively.
 
-This repo contains:
-
-| Folder | What it is |
-|--------|------------|
-| **`AsmonFinder/`** | The **Lua addon** you install into the game |
-| **`asmon-finder/`** | A **TypeScript-checked JavaScript** reference implementation with unit tests (the design source of truth) |
+Install the **`AsmonFinder/`** folder into the game. That is the addon.
 
 ---
 
@@ -147,46 +142,29 @@ Silent auto-targeting from insecure addon code is intentionally **not** used. Ta
 
 ---
 
-## Repository layout
+## Addon files
 
 ```text
-LUA_ADDONS/
-├── AsmonFinder/          ← install this into Interface/AddOns
-│   ├── AsmonFinder.toc
-│   ├── AsmonFinder.lua   ← boot + SavedVariables
-│   ├── Types.lua         ← LuaLS/LuaCATS type declarations
-│   ├── Settings.lua      ← defaults + settings store
-│   ├── Core.lua          ← detection / alerts
-│   ├── AddonController.lua
-│   ├── SettingsPanel.lua ← in-game UI
-│   ├── WowBridge.lua     ← WoW API adapter
-│   ├── UI_PREVIEW.html   ← standalone browser UI preview
-│   └── images/           ← browser + WoW-compatible artwork
-│
-└── asmon-finder/         ← JS reference + tests (not installed in-game)
-    ├── src/
-    ├── tests/
-    ├── demo/             ← browser settings mock
-    └── package.json
+AsmonFinder/          ← install this into Interface/AddOns
+├── AsmonFinder.toc
+├── AsmonFinder.lua   ← boot + SavedVariables
+├── Types.lua         ← LuaLS/LuaCATS type declarations
+├── Settings.lua      ← defaults + settings store
+├── Core.lua          ← detection / alerts
+├── AddonController.lua
+├── SettingsPanel.lua ← in-game UI
+├── WowBridge.lua     ← WoW API adapter
+├── UI_PREVIEW.html   ← standalone browser UI preview
+└── images/           ← browser + WoW-compatible artwork
 ```
 
-The Lua addon mirrors the JS architecture so behavior can be designed and tested outside the client, then shipped as Lua.
+Versioned copies such as `AsmonFinder-1.04` are snapshots. WoW only loads a folder named **`AsmonFinder`**.
 
 ---
 
-## Develop / test the JS reference
+## Lua tests
 
-```bash
-cd asmon-finder
-npm install
-npm run lint
-npm run typecheck
-npm test
-```
-
-## Run the Lua addon tests
-
-The Lua implementation is tested with [Busted](https://lunarmodules.github.io/busted/).
+The addon is tested with [Busted](https://lunarmodules.github.io/busted/).
 On macOS:
 
 ```bash
@@ -195,27 +173,11 @@ luarocks install busted
 busted lua-tests
 ```
 
-Or run every JavaScript and Lua quality gate together:
-
-```bash
-cd asmon-finder
-npm run test:all
-```
-
 ### Open the one-to-one UI preview
 
 Open `AsmonFinder/UI_PREVIEW.html` directly in a browser. It needs no server and
 uses the same 430 × 780 layout measurements as the Lua panel. The watch list,
 cooldown, test alert, close button, and target label are interactive.
-
-The separate behavior-focused browser demo can still be run with:
-
-```bash
-cd asmon-finder
-npm run demo
-```
-
-Open [http://localhost:5173/demo/](http://localhost:5173/demo/)
 
 ---
 
@@ -236,7 +198,7 @@ Open [http://localhost:5173/demo/](http://localhost:5173/demo/)
 
 Use this in the repo description field:
 
-> WoW Forever addon that detects watched players by full name, alerts you, and saves last-seen zone + map coordinates. Includes a tested JS reference implementation.
+> WoW Forever addon that detects watched players by full name, alerts you, and saves last-seen zone + map coordinates.
 
 ---
 
@@ -248,5 +210,4 @@ Add a license of your choice before publishing if you want others to redistribut
 
 ## Credits
 
-- Architecture inspired by dependency-injected, testable addon design  
-- Secure targeting pattern aligned with how addons like **RareScanner** use `/targetexact` instead of unprotected targeting APIs  
+- Secure targeting pattern aligned with how addons like **RareScanner** use `/targetexact` instead of unprotected targeting APIs
