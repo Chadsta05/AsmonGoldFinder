@@ -1,0 +1,15 @@
+## Interface: 115000
+## Title: Asmon Finder
+## Notes: Detects watched characters (full names, no realms) and alerts you.
+## Author: AsmonFinder
+## Version: 1.04
+## SavedVariables: AsmonFinderDB
+## OptionalDeps:
+
+Types.lua
+Settings.lua
+Core.lua
+AddonController.lua
+SettingsPanel.lua
+WowBridge.lua
+AsmonFinder.lua
