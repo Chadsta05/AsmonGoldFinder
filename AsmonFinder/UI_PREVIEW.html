@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Asmon Finder — In-Game UI Preview</title>
+  <style>
+    :root {
+      --gold: #79bfff;
+      --gold-bright: #f2f8ff;
+      --gold-dim: #376ea8;
+      --ink: #02050d;
+      --panel: #06112a;
+      --blue: #6dc9ff;
+      --muted: #92a5ba;
+      --red: #153c73;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 32px 16px;
+      color: #e8f2ff;
+      background:
+        radial-gradient(circle at 50% 12%, #153f7d 0, #071631 34%, #01040b 74%),
+        #01040b;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .preview-tools {
+      width: min(430px, 100%);
+      margin: 0 auto 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: #9db0c8;
+      font: 13px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .preview-tools button {
+      border: 1px solid #4d6f9c;
+      border-radius: 4px;
+      padding: 7px 12px;
+      color: #eaf4ff;
+      background: #07162e;
+      cursor: pointer;
+    }
+
+    .preview-tools button:hover {
+      border-color: var(--gold);
+      color: var(--gold-bright);
+    }
+
+    .wow-panel {
+      position: relative;
+      width: 430px;
+      height: 780px;
+      max-width: 100%;
+      margin: 0 auto;
+      overflow: hidden;
+      color: #fff;
+      background:
+        linear-gradient(90deg, transparent 0 10px, rgba(1, 5, 17, 0.42) 10px calc(100% - 10px), transparent calc(100% - 10px)),
+        linear-gradient(180deg, rgba(4, 17, 43, 0.18), rgba(1, 5, 15, 0.55)),
+        url("images/TabardPanel.png") center 92px / cover no-repeat;
+      border: 2px solid #58779e;
+      border-radius: 5px;
+      box-shadow:
+        0 0 0 2px #020817,
+        0 0 0 3px #9cabc0,
+        0 18px 60px rgba(0, 0, 0, 0.8),
+        inset 0 0 32px rgba(0, 0, 0, 0.9);
+    }
+
+    .wow-panel[hidden] {
+      display: none;
+    }
+
+    .titlebar {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      background:
+        linear-gradient(180deg, #294d78 0, #0b203e 45%, #020713 52%, #142e50 100%);
+      border-bottom: 2px solid #01040b;
+      box-shadow: inset 0 0 0 1px #8199b8;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-shadow: 1px 2px 2px #000;
+    }
+
+    .close {
+      position: absolute;
+      z-index: 10;
+      top: 1px;
+      right: 2px;
+      width: 25px;
+      height: 25px;
+      border: 2px solid #7e9fc5;
+      border-radius: 4px;
+      color: #f3f8ff;
+      background: linear-gradient(#1e5798, #08264f);
+      box-shadow: inset 0 0 4px #000;
+      font: 700 17px/18px Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .hero {
+      position: absolute;
+      top: 34px;
+      left: 16px;
+      width: 394px;
+      height: 186px;
+      overflow: hidden;
+      background: #020713;
+      border: 3px solid #376fae;
+      box-shadow:
+        0 0 0 1px #aab8ca,
+        0 0 22px rgba(75, 151, 235, 0.28);
+    }
+
+    .hero img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 70px;
+      background: linear-gradient(transparent, rgba(3, 5, 13, 0.96));
+    }
+
+    .edition {
+      position: absolute;
+      z-index: 2;
+      top: 10px;
+      right: 12px;
+      padding: 4px 7px;
+      color: var(--gold-bright);
+      background: rgba(2, 8, 24, 0.82);
+      border: 1px solid rgba(174, 216, 255, 0.65);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-shadow: 1px 1px #000;
+    }
+
+    .hero-copy {
+      position: absolute;
+      z-index: 2;
+      right: 0;
+      bottom: 12px;
+      left: 0;
+      text-align: center;
+      text-shadow: 0 2px 3px #000;
+    }
+
+    .hero-copy strong {
+      display: block;
+      color: var(--gold-bright);
+      font-size: 22px;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-copy span {
+      display: block;
+      margin-top: 2px;
+      color: #e9edf8;
+      font-size: 10px;
+      letter-spacing: 0.13em;
+    }
+
+    .content {
+      position: absolute;
+      top: 238px;
+      right: 40px;
+      bottom: 12px;
+      left: 40px;
+      font-size: 12px;
+      text-shadow: 1px 1px 1px #000;
+    }
+
+    .content::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: -8px -16px -2px;
+      border: 1px solid rgba(76, 142, 216, 0.24);
+      background:
+        linear-gradient(180deg, rgba(5, 20, 49, 0.68), rgba(1, 6, 18, 0.62));
+      box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.64);
+    }
+
+    .check-row {
+      position: absolute;
+      left: 0;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #dcecff;
+      cursor: pointer;
+    }
+
+    .check-row input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .checkmark {
+      position: relative;
+      width: 21px;
+      height: 21px;
+      flex: 0 0 auto;
+      border: 2px ridge #7992b2;
+      background: radial-gradient(circle, #10274a, #020611 75%);
+      box-shadow: 0 1px 3px #000;
+    }
+
+    .check-row input:checked + .checkmark::after {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: -2px;
+      width: 9px;
+      height: 16px;
+      border: solid #ecf8ff;
+      border-width: 0 3px 3px 0;
+      transform: rotate(42deg);
+      filter: drop-shadow(0 0 3px #3da5ff);
+    }
+
+    .enabled {
+      top: 0;
+    }
+
+    .section-title {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      color: #79bfff;
+      font-size: 11px;
+      letter-spacing: 0.07em;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      top: 7px;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(68, 139, 218, 0.58), transparent);
+    }
+
+    .alerts {
+      top: 38px;
+    }
+
+    .alerts::after {
+      left: 58px;
+    }
+
+    .raid {
+      top: 58px;
+    }
+
+    .sound {
+      top: 58px;
+      left: 112px;
+    }
+
+    .chat {
+      top: 58px;
+      left: 214px;
+    }
+
+    .cooldown-title {
+      top: 96px;
+    }
+
+    .cooldown-title::after {
+      left: 105px;
+    }
+
+    .cooldown {
+      position: absolute;
+      top: 116px;
+      left: 8px;
+      width: 260px;
+      accent-color: #4ca8ff;
+    }
+
+    .cooldown-meta {
+      position: absolute;
+      top: 139px;
+      left: 8px;
+      width: 260px;
+      display: flex;
+      justify-content: space-between;
+      color: #f1f1f1;
+      font: 11px Arial, sans-serif;
+    }
+
+    .targeting-title {
+      top: 166px;
+    }
+
+    .targeting-title::after {
+      left: 72px;
+    }
+
+    .auto-target {
+      top: 184px;
+    }
+
+    .watched-title {
+      top: 222px;
+    }
+
+    .watched-title::after {
+      left: 130px;
+    }
+
+    .name-list {
+      position: absolute;
+      top: 242px;
+      left: 0;
+      width: 310px;
+      height: 72px;
+      margin: 0;
+      padding: 3px 4px 3px 3px;
+      overflow-y: auto;
+      list-style: none;
+      border: 1px solid rgba(85, 151, 224, 0.38);
+      background: rgba(1, 7, 23, 0.72);
+      box-shadow: inset 0 0 9px rgba(0, 0, 0, 0.7);
+      scrollbar-color: #346fae #020713;
+      scrollbar-width: thin;
+    }
+
+    .name-list li {
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 4px;
+      color: #fff;
+      border-bottom: 1px solid rgba(115, 179, 241, 0.14);
+      font: 13px Arial, sans-serif;
+    }
+
+    .remove {
+      width: 22px;
+      height: 21px;
+      border: 2px solid #587faf;
+      border-radius: 4px;
+      color: #e8f5ff;
+      background: linear-gradient(#174d8d, #071d40);
+      font: 700 13px/15px Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .text-input {
+      height: 24px;
+      border: 2px ridge #526f94;
+      border-radius: 4px;
+      padding: 2px 7px;
+      color: #fff;
+      outline: none;
+      background: #010716;
+      box-shadow: inset 0 0 5px #000;
+      font: 13px Arial, sans-serif;
+    }
+
+    .text-input:focus {
+      border-color: #5aaeff;
+    }
+
+    .name-input {
+      position: absolute;
+      top: 330px;
+      left: 6px;
+      width: 200px;
+    }
+
+    .wow-button {
+      height: 24px;
+      border: 2px ridge #6485ac;
+      border-radius: 4px;
+      color: var(--gold);
+      background: linear-gradient(#1b579d, #082751 58%, #10427c);
+      box-shadow: inset 0 0 4px #000, 0 1px 2px #000;
+      font: 12px Georgia, serif;
+      text-shadow: 1px 1px #000;
+      cursor: pointer;
+    }
+
+    .wow-button:hover {
+      color: #fff;
+      filter: brightness(1.22);
+    }
+
+    .add {
+      position: absolute;
+      top: 330px;
+      left: 214px;
+      width: 70px;
+    }
+
+    .last-title {
+      top: 370px;
+    }
+
+    .last-title::after {
+      left: 68px;
+    }
+
+    .last-seen {
+      position: absolute;
+      top: 390px;
+      left: 0;
+      width: 310px;
+      font: 11px Arial, sans-serif;
+      color: var(--muted);
+      line-height: 14px;
+    }
+
+    .last-name {
+      color: #dceeff;
+      font: 13px Georgia, serif;
+    }
+
+    .last-seen.empty .last-name {
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+    }
+
+    .dev-title {
+      top: 420px;
+      color: var(--blue);
+    }
+
+    .dev-title::after {
+      left: 63px;
+      background: linear-gradient(90deg, rgba(72, 163, 225, 0.5), transparent);
+    }
+
+    .test-input {
+      position: absolute;
+      top: 440px;
+      left: 6px;
+      width: 180px;
+    }
+
+    .test {
+      position: absolute;
+      top: 440px;
+      left: 194px;
+      width: 100px;
+    }
+
+    .last-seen:not(.empty) ~ .dev-title {
+      top: 456px;
+    }
+
+    .last-seen:not(.empty) ~ .test-input,
+    .last-seen:not(.empty) ~ .test {
+      top: 476px;
+    }
+
+    .target {
+      position: absolute;
+      left: 123px;
+      bottom: 8px;
+      width: 180px;
+      height: 26px;
+    }
+
+    .toast {
+      position: absolute;
+      z-index: 20;
+      top: 286px;
+      left: 50%;
+      width: 320px;
+      padding: 12px;
+      transform: translateX(-50%) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      text-align: center;
+      color: #eff9ff;
+      background: rgba(3, 18, 51, 0.96);
+      border: 2px solid #5caeff;
+      box-shadow: 0 0 20px #000, inset 0 0 14px #000;
+      transition: 140ms ease;
+      font-size: 18px;
+      text-shadow: 1px 2px #000;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    @media (max-width: 470px) {
+      body {
+        padding: 12px 5px;
+      }
+
+      .wow-panel {
+        transform-origin: top center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-tools">
+    <span>430 × 780 WoW layout preview — no server required</span>
+    <button id="reopen" type="button">Reopen panel</button>
+  </div>
+
+  <main class="wow-panel" id="panel">
+    <div class="titlebar">Asmon Finder Control Center</div>
+    <button class="close" id="close" type="button" aria-label="Close">×</button>
+
+    <section class="hero">
+      <img src="images/AsmonTabard_Hero.png" alt="Asmon Finder paladin artwork">
+      <span class="edition">FOREVER EDITION</span>
+      <div class="hero-copy">
+        <strong>FOR OLYMPUS!</strong>
+        <span>WATCH THE WORLD. FIND THE LEGEND.</span>
+      </div>
+    </section>
+
+    <section class="content">
+      <label class="check-row enabled">
+        <input type="checkbox" checked>
+        <span class="checkmark"></span>
+        <span>Enable Asmon Finder</span>
+      </label>
+
+      <div class="section-title alerts">ALERTS</div>
+      <label class="check-row raid">
+        <input type="checkbox" checked>
+        <span class="checkmark"></span>
+        <span>Raid warning</span>
+      </label>
+      <label class="check-row sound">
+        <input type="checkbox" checked>
+        <span class="checkmark"></span>
+        <span>Play sound</span>
+      </label>
+      <label class="check-row chat">
+        <input type="checkbox" checked>
+        <span class="checkmark"></span>
+        <span>Chat message</span>
+      </label>
+
+      <div class="section-title cooldown-title">ALERT COOLDOWN</div>
+      <input class="cooldown" id="cooldown" type="range" min="0" max="60" value="0">
+      <div class="cooldown-meta">
+        <span>0s</span>
+        <span id="cooldown-value">0 seconds</span>
+        <span>60s</span>
+      </div>
+
+      <div class="section-title targeting-title">TARGETING</div>
+      <label class="check-row auto-target">
+        <input type="checkbox" checked>
+        <span class="checkmark"></span>
+        <span>Prepare target when detected</span>
+      </label>
+
+      <div class="section-title watched-title" id="watched-title">WATCHED CHARACTERS (0)</div>
+      <ul class="name-list" id="name-list"></ul>
+      <input class="text-input name-input" id="name-input" type="text" aria-label="Character name">
+      <button class="wow-button add" id="add" type="button">+ ADD</button>
+
+      <div class="section-title last-title">LAST SEEN</div>
+      <div class="last-seen empty" id="last-seen">
+        <div class="last-name" id="last-name">No sightings yet</div>
+        <div id="last-details" hidden>
+          <div>Stormwind City - Trade District</div>
+          <div>Detected via test</div>
+          <div>Coords 62.9, 71.3 (map 1453)</div>
+        </div>
+      </div>
+
+      <div class="section-title dev-title">DEV TEST</div>
+      <input class="text-input test-input" id="test-name" type="text" value="Donald Trump">
+      <button class="wow-button test" id="test" type="button">TEST ALERT</button>
+    </section>
+
+    <button class="wow-button target" id="target" type="button" hidden>Target Last Seen</button>
+    <div class="toast" id="toast" role="status">Donald Trump detected!</div>
+  </main>
+
+  <script>
+    /** @type {string[]} */
+    let watchedNames = ["Asmongold"];
+
+    /** Render the interactive watched-character rows. */
+    function renderNames() {
+      /** @type {HTMLElement|null} */
+      const list = document.getElementById("name-list");
+      /** @type {HTMLElement|null} */
+      const title = document.getElementById("watched-title");
+      if (!list || !title) {
+        return;
+      }
+
+      list.replaceChildren();
+      title.textContent = "WATCHED CHARACTERS (" + watchedNames.length + ")";
+
+      for (const name of watchedNames) {
+        /** @type {HTMLLIElement} */
+        const row = document.createElement("li");
+        /** @type {HTMLSpanElement} */
+        const label = document.createElement("span");
+        /** @type {HTMLButtonElement} */
+        const remove = document.createElement("button");
+
+        label.textContent = name;
+        remove.type = "button";
+        remove.className = "remove";
+        remove.textContent = "×";
+        remove.setAttribute("aria-label", "Remove " + name);
+        remove.addEventListener("click", function handleRemove() {
+          watchedNames = watchedNames.filter(function keepName(existingName) {
+            return existingName !== name;
+          });
+          renderNames();
+        });
+
+        row.append(label, remove);
+        list.append(row);
+      }
+    }
+
+    /** Add the entered full character name to the preview list. */
+    function addName() {
+      /** @type {HTMLElement|null} */
+      const element = document.getElementById("name-input");
+      if (!(element instanceof HTMLInputElement)) {
+        return;
+      }
+
+      /** @type {string} */
+      const name = element.value.trim();
+      if (!name) {
+        return;
+      }
+
+      if (!watchedNames.includes(name)) {
+        watchedNames.push(name);
+      }
+
+      element.value = "";
+      renderNames();
+    }
+
+    /** Show a short in-panel raid-warning preview. */
+    function showToast() {
+      /** @type {HTMLElement|null} */
+      const input = document.getElementById("test-name");
+      /** @type {HTMLElement|null} */
+      const toast = document.getElementById("toast");
+      /** @type {HTMLElement|null} */
+      const lastSeen = document.getElementById("last-seen");
+      /** @type {HTMLElement|null} */
+      const lastName = document.getElementById("last-name");
+      /** @type {HTMLElement|null} */
+      const lastDetails = document.getElementById("last-details");
+      /** @type {HTMLElement|null} */
+      const target = document.getElementById("target");
+
+      if (
+        !(input instanceof HTMLInputElement) ||
+        !toast ||
+        !lastSeen ||
+        !lastName ||
+        !lastDetails ||
+        !target
+      ) {
+        return;
+      }
+
+      /** @type {string} */
+      let name = input.value.trim();
+      if (!name) {
+        name = "Asmongold";
+      }
+      toast.textContent = name + " detected!";
+      lastName.textContent = name;
+      lastSeen.classList.remove("empty");
+      lastDetails.hidden = false;
+      target.textContent = "Target: " + name;
+      target.hidden = false;
+      toast.classList.add("visible");
+
+      window.setTimeout(function hideToast() {
+        toast.classList.remove("visible");
+      }, 1600);
+    }
+
+    /** Update the visible cooldown value. */
+    function updateCooldown() {
+      /** @type {HTMLElement|null} */
+      const input = document.getElementById("cooldown");
+      /** @type {HTMLElement|null} */
+      const value = document.getElementById("cooldown-value");
+      if (!(input instanceof HTMLInputElement) || !value) {
+        return;
+      }
+
+      value.textContent = input.value + " seconds";
+    }
+
+    /** Hide the simulated in-game frame. */
+    function closePanel() {
+      /** @type {HTMLElement|null} */
+      const panel = document.getElementById("panel");
+      if (!panel) {
+        return;
+      }
+
+      panel.hidden = true;
+    }
+
+    /** Reopen the simulated in-game frame. */
+    function reopenPanel() {
+      /** @type {HTMLElement|null} */
+      const panel = document.getElementById("panel");
+      if (!panel) {
+        return;
+      }
+
+      panel.hidden = false;
+    }
+
+    /**
+     * Run add-name behavior when Enter is pressed.
+     *
+     * @param {KeyboardEvent} event
+     */
+    function handleNameKeydown(event) {
+      if (event.key !== "Enter") {
+        return;
+      }
+
+      addName();
+    }
+
+    /** Bind every interactive preview control. */
+    function bindEvents() {
+      /** @type {HTMLElement|null} */
+      const add = document.getElementById("add");
+      /** @type {HTMLElement|null} */
+      const nameInput = document.getElementById("name-input");
+      /** @type {HTMLElement|null} */
+      const test = document.getElementById("test");
+      /** @type {HTMLElement|null} */
+      const cooldown = document.getElementById("cooldown");
+      /** @type {HTMLElement|null} */
+      const close = document.getElementById("close");
+      /** @type {HTMLElement|null} */
+      const reopen = document.getElementById("reopen");
+
+      if (add) {
+        add.addEventListener("click", addName);
+      }
+
+      if (nameInput) {
+        nameInput.addEventListener("keydown", handleNameKeydown);
+      }
+
+      if (test) {
+        test.addEventListener("click", showToast);
+      }
+
+      if (cooldown) {
+        cooldown.addEventListener("input", updateCooldown);
+      }
+
+      if (close) {
+        close.addEventListener("click", closePanel);
+      }
+
+      if (reopen) {
+        reopen.addEventListener("click", reopenPanel);
+      }
+    }
+
+    bindEvents();
+    renderNames();
+  </script>
+</body>
+</html>
