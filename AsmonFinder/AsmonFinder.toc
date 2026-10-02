@@ -1,8 +1,9 @@
-## Interface: 115000
+## Interface: 16000, 16001
 ## Title: Asmon Finder
 ## Notes: Detects watched characters (full names, no realms) and alerts you.
 ## Author: AsmonFinder
-## Version: 1.07
+## Version: 1.09
+## IconTexture: Interface\AddOns\AsmonFinder\icon
 ## SavedVariables: AsmonFinderDB
 ## OptionalDeps:
 
